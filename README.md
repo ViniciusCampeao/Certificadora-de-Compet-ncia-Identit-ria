@@ -1,1 +1,1 @@
-# Certificadora-de-Compet-ncia-Identit-ria
+# Certificadora-de-Competência-Identitária

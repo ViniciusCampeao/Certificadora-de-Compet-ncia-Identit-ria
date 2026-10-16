@@ -1,0 +1,104 @@
+{
+  "volunteers": [
+    {
+      "id": "v-1001",
+      "name": "Ana Beatriz Costa",
+      "registration": "20241001",
+      "course": "Análise e Desenvolvimento de Sistemas",
+      "period": "5º período",
+      "email": "ana.costa@exemplo.edu.br",
+      "phone": "(43) 99900-1001",
+      "joined": "2026-03-10",
+      "status": "Ativo",
+      "type": "Voluntária",
+      "workshops": [
+        "Introdução à programação"
+      ],
+      "termStatus": "Aprovado"
+    },
+    {
+      "id": "v-1002",
+      "name": "Lucas Henrique Alves",
+      "registration": "20241002",
+      "course": "Engenharia da Computação",
+      "period": "3º período",
+      "email": "lucas.alves@exemplo.edu.br",
+      "phone": "(43) 99900-1002",
+      "joined": "2026-04-02",
+      "status": "Ativo",
+      "type": "Voluntário",
+      "workshops": [
+        "Robótica criativa"
+      ],
+      "termStatus": "Em análise"
+    },
+    {
+      "id": "v-1003",
+      "name": "Mariana Oliveira Santos",
+      "registration": "20231018",
+      "course": "Licenciatura em Matemática",
+      "period": "7º período",
+      "email": "mariana.santos@exemplo.edu.br",
+      "phone": "(43) 99900-1003",
+      "joined": "2025-08-18",
+      "status": "Encerrado",
+      "type": "Voluntária",
+      "workshops": [
+        "Matemática no cotidiano"
+      ],
+      "termStatus": "Pendente"
+    },
+    {
+      "id": "v-1004",
+      "name": "Pedro Augusto Lima",
+      "registration": "20251007",
+      "course": "Sistemas de Informação",
+      "period": "1º período",
+      "email": "pedro.lima@exemplo.edu.br",
+      "phone": "(43) 99900-1004",
+      "joined": "2026-09-22",
+      "status": "Ativo",
+      "type": "Voluntário",
+      "workshops": [],
+      "termStatus": "Pendente"
+    }
+  ],
+  "workshops": [
+    {
+      "id": "w-01",
+      "name": "Introdução à programação",
+      "date": "2026-10-24",
+      "duration": 2,
+      "participants": [
+        "v-1001"
+      ]
+    },
+    {
+      "id": "w-02",
+      "name": "Robótica criativa",
+      "date": "2026-10-31",
+      "duration": 3,
+      "participants": [
+        "v-1002"
+      ]
+    },
+    {
+      "id": "w-03",
+      "name": "Matemática no cotidiano",
+      "date": "2026-11-07",
+      "duration": 2,
+      "participants": [
+        "v-1003"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "id": "h-1",
+      "date": "2026-10-15T10:00:00-03:00",
+      "actor": "Demonstração",
+      "action": "Base inicial fictícia carregada",
+      "record": "Sistema"
+    }
+  ]
+}

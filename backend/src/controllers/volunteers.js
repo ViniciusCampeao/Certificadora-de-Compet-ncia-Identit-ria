@@ -22,6 +22,12 @@ const findVolunteer = async (id) => {
   return volunteer;
 };
 
+export const meProfile = asyncHandler(async (req, res) => {
+  const volunteer = await Volunteer.findById(req.user.id);
+  if (!volunteer) throw new ApiError(404, "Voluntário não encontrado");
+  res.json(volunteer);
+});
+
 export const list = asyncHandler(async (req, res) => {
   const filter = {};
   const status = req.query.status;

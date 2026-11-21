@@ -2,8 +2,12 @@ import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./style.css";
 
+const authHeaders = () => {
+  const token = sessionStorage.getItem("ellp-token");
+  return token ? { authorization: `Bearer ${token}` } : {};
+};
 const get = async (url) => {
-  const r = await fetch("/api" + url);
+  const r = await fetch("/api" + url, { headers: authHeaders() });
   const d = await r.json();
   if (!r.ok) throw Error(d.error || "Falha ao consultar");
   return d;
@@ -11,7 +15,7 @@ const get = async (url) => {
 const send = async (url, method, body) => {
   const r = await fetch("/api" + url, {
     method,
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", ...authHeaders() },
     body: JSON.stringify(body),
   });
   const d = await r.json();
@@ -29,7 +33,8 @@ const date = (d) =>
   d ? new Date(`${d}T12:00:00`).toLocaleDateString("pt-BR") : "—";
 function App() {
   const [logged, setLogged] = useState(
-      sessionStorage.getItem("ellp-login") === "yes",
+      sessionStorage.getItem("ellp-login") === "yes" &&
+        !!sessionStorage.getItem("ellp-token"),
     ),
     [page, setPage] = useState("Visão geral"),
     [data, setData] = useState(null),

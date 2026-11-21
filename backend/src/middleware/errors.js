@@ -15,6 +15,10 @@ export const errorHandler = (err, req, res, next) => {
   }
   if (err.name === "CastError")
     return res.status(400).json({ error: "Identificador inválido" });
+  if (err.name === "MulterError")
+    return res
+      .status(400)
+      .json({ error: "Arquivo inválido ou acima do tamanho permitido" });
   if (err.code === 11000)
     return res.status(409).json({ error: "Registro já cadastrado" });
 

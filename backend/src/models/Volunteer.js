@@ -20,7 +20,7 @@ const volunteerSchema = new mongoose.Schema(
     workshops: { type: [String], default: [] },
     termStatus: {
       type: String,
-      enum: ["Pendente", "Em análise", "Aprovado", "Rejeitado"],
+      enum: ["Pendente", "Gerado", "Em análise", "Aprovado", "Rejeitado"],
       default: "Pendente",
     },
     passwordHash: { type: String, select: false },

@@ -8,7 +8,7 @@ export const summary = asyncHandler(async (req, res) => {
       Volunteer.countDocuments({ status: "Ativo" }),
       Workshop.countDocuments(),
       Volunteer.countDocuments({
-        termStatus: { $in: ["Pendente", "Em análise"] },
+        termStatus: { $in: ["Pendente", "Gerado", "Em análise"] },
       }),
       History.find().sort({ date: -1 }).limit(6),
     ]);

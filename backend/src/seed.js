@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { env } from "./config/env.js";
 import { connectDatabase, disconnectDatabase } from "./config/db.js";
-import { Admin, Volunteer, Workshop, History } from "./models/index.js";
+import { Admin, Volunteer, Workshop, Term, History } from "./models/index.js";
 import { hashPassword } from "./utils/password.js";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
@@ -17,6 +17,7 @@ const run = async () => {
     Admin.deleteMany({}),
     Volunteer.deleteMany({}),
     Workshop.deleteMany({}),
+    Term.deleteMany({}),
     History.deleteMany({}),
   ]);
 
@@ -58,6 +59,18 @@ const run = async () => {
         .filter(Boolean),
     })),
   );
+
+  const terms = [];
+  seed.volunteers.forEach((v, i) => {
+    if (v.termStatus && v.termStatus !== "Pendente")
+      terms.push({
+        volunteer: volunteers[i]._id,
+        status: v.termStatus,
+        generatedAt: new Date(),
+        approvedAt: v.termStatus === "Aprovado" ? new Date() : null,
+      });
+  });
+  if (terms.length) await Term.insertMany(terms);
 
   await History.insertMany(
     seed.history.map((h) => ({

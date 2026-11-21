@@ -5,6 +5,7 @@ import auth from "./auth.js";
 import dashboard from "./dashboard.js";
 import volunteers from "./volunteers.js";
 import workshops from "./workshops.js";
+import terms from "./terms.js";
 import history from "./history.js";
 
 const api = Router();
@@ -16,6 +17,7 @@ api.use("/auth", auth);
 api.use("/dashboard", requireAuth, authorize("admin"), dashboard);
 api.use("/volunteers", volunteers);
 api.use("/workshops", requireAuth, authorize("admin"), workshops);
+api.use("/terms", terms);
 api.use("/history", requireAuth, authorize("admin"), history);
 
 export default api;

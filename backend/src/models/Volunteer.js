@@ -23,6 +23,8 @@ const volunteerSchema = new mongoose.Schema(
       enum: ["Pendente", "Em análise", "Aprovado", "Rejeitado"],
       default: "Pendente",
     },
+    passwordHash: { type: String, select: false },
+    mustChangePassword: { type: Boolean, default: true },
   },
   { timestamps: true },
 );

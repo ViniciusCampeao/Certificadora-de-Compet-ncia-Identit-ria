@@ -3,7 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { env } from "./config/env.js";
 import { connectDatabase, disconnectDatabase } from "./config/db.js";
-import { Volunteer, Workshop, History } from "./models/index.js";
+import { Admin, Volunteer, Workshop, History } from "./models/index.js";
+import { hashPassword } from "./utils/password.js";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const dataPath = path.join(root, "..", "data", "db.json");
@@ -13,11 +14,19 @@ const run = async () => {
   await connectDatabase(env.mongoUri);
 
   await Promise.all([
+    Admin.deleteMany({}),
     Volunteer.deleteMany({}),
     Workshop.deleteMany({}),
     History.deleteMany({}),
   ]);
 
+  await Admin.create({
+    name: env.admin.name,
+    username: env.admin.username,
+    passwordHash: await hashPassword(env.admin.password),
+  });
+
+  const defaultHash = await hashPassword(env.volunteerDefaultPassword);
   const volunteers = await Volunteer.insertMany(
     seed.volunteers.map((v) => ({
       name: v.name,
@@ -31,6 +40,8 @@ const run = async () => {
       status: v.status,
       workshops: v.workshops,
       termStatus: v.termStatus,
+      passwordHash: defaultHash,
+      mustChangePassword: true,
     })),
   );
 
@@ -58,8 +69,8 @@ const run = async () => {
   );
 
   console.log(
-    `Carga inicial concluída: ${volunteers.length} voluntários, ` +
-      `${seed.workshops.length} oficinas.`,
+    `Carga inicial concluída: administrador "${env.admin.username}", ` +
+      `${volunteers.length} voluntários, ${seed.workshops.length} oficinas.`,
   );
   await disconnectDatabase();
 };

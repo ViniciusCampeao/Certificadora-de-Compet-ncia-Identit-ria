@@ -5,6 +5,7 @@ export const jsonOptions = {
   virtuals: true,
   transform(_doc, ret) {
     delete ret._id;
+    delete ret.passwordHash;
     return ret;
   },
 };

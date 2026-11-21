@@ -68,10 +68,11 @@ function App() {
     e.preventDefault();
     setBusy(true);
     try {
-      await send("/auth", "POST", {
-        username: e.target.username.value,
+      const res = await send("/auth/login", "POST", {
+        user: e.target.username.value,
         password: e.target.password.value,
       });
+      sessionStorage.setItem("ellp-token", res.token);
       sessionStorage.setItem("ellp-login", "yes");
       setLogged(true);
     } catch (e) {
@@ -191,9 +192,9 @@ function App() {
           <div className="demo-hint">
             <span className="lock">◈</span>
             <span>
-              Demo local
+              Acesso do administrador
               <br />
-              <b>admin</b> / <b>ellp-demo</b>
+              <b>admin</b> / <b>ellp-admin</b>
             </span>
           </div>
           <small>Dados fictícios para apresentação acadêmica.</small>

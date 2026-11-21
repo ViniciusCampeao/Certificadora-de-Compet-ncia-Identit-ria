@@ -3,6 +3,7 @@ import { asyncHandler, ApiError } from "../lib/http.js";
 import { Volunteer } from "../models/index.js";
 import { record } from "../utils/history.js";
 import { escapeRegex } from "../utils/text.js";
+import { isEmail, isValidCpf, isIsoDate, onlyDigits } from "../utils/validation.js";
 
 const editable = [
   "name",
@@ -10,9 +11,17 @@ const editable = [
   "period",
   "email",
   "phone",
+  "cpf",
   "status",
   "termStatus",
 ];
+
+const validateContact = (b) => {
+  if (b.email && !isEmail(b.email)) throw new ApiError(400, "E-mail inválido");
+  if (b.cpf && !isValidCpf(b.cpf)) throw new ApiError(400, "CPF inválido");
+  if (b.joined && !isIsoDate(b.joined))
+    throw new ApiError(400, "Data de entrada inválida");
+};
 
 const findVolunteer = async (id) => {
   if (!mongoose.isValidObjectId(id))
@@ -43,13 +52,19 @@ export const list = asyncHandler(async (req, res) => {
 
 export const create = asyncHandler(async (req, res) => {
   const b = req.body;
-  if (!b.name?.trim() || !b.registration?.trim())
-    throw new ApiError(400, "Nome e matrícula são obrigatórios");
-  if (await Volunteer.exists({ registration: b.registration.trim() }))
+  const name = (b.name || "").trim();
+  const registration = (b.registration || "").trim();
+  if (name.length < 3)
+    throw new ApiError(400, "O nome deve ter ao menos 3 caracteres");
+  if (!/^\d{4,}$/.test(registration))
+    throw new ApiError(400, "A matrícula deve conter apenas números");
+  validateContact(b);
+  if (await Volunteer.exists({ registration }))
     throw new ApiError(409, "Matrícula já cadastrada");
   const volunteer = await Volunteer.create({
-    name: b.name.trim(),
-    registration: b.registration.trim(),
+    name,
+    registration,
+    cpf: b.cpf ? onlyDigits(b.cpf) : undefined,
     course: b.course || undefined,
     period: b.period || undefined,
     email: b.email || "",
@@ -62,8 +77,10 @@ export const create = asyncHandler(async (req, res) => {
 
 export const update = asyncHandler(async (req, res) => {
   const volunteer = await findVolunteer(req.params.id);
+  validateContact(req.body);
   for (const [key, value] of Object.entries(req.body))
-    if (editable.includes(key)) volunteer[key] = value;
+    if (editable.includes(key))
+      volunteer[key] = key === "cpf" ? onlyDigits(value) : value;
   await volunteer.save();
   await record("Atualização de voluntário", volunteer.name);
   res.json(volunteer);

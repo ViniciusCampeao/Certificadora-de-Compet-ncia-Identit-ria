@@ -2,3 +2,7 @@ node_modules/
 dist/
 presentation/build/
 tmp/
+.env
+backend/uploads/
+coverage/
+*.log

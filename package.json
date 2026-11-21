@@ -6,14 +6,21 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "api": "node backend/server.js",
-    "build": "vite build"
+    "build": "vite build",
+    "lint": "eslint .",
+    "format": "prettier --write \"**/*.{js,jsx,json,css,md}\""
   },
   "dependencies": {
+    "dotenv": "^16.4.5",
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.13.0",
     "@vitejs/plugin-react": "6.1.2",
+    "eslint": "^9.13.0",
+    "globals": "^15.11.0",
+    "prettier": "^3.3.3",
     "vite": "8.3.4"
   },
   "engines": {

@@ -1265,4 +1265,62 @@ table tbody tr.clickable {
   display: flex;
   justify-content: flex-end;
 }
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.mini {
+  height: 29px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid #dfe5df;
+  background: white;
+  color: #47554a;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+.mini:hover {
+  background: var(--soft);
+}
+.mini:disabled {
+  opacity: 0.55;
+}
+.mini.primary {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+.mini.danger,
+.primary.danger {
+  background: #c0564d;
+  border-color: #c0564d;
+  color: white;
+}
+.mini.danger:hover,
+.primary.danger:hover {
+  background: #a9483f;
+}
+.reject-hint {
+  display: block;
+  margin-top: 3px;
+  color: #a4473f;
+  font-size: 10.5px;
+}
+.upload-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 0 18px 18px;
+}
+.upload-form input[type="file"] {
+  font-size: 12px;
+}
+.confirm-message {
+  font-size: 13px;
+  color: #3a463c;
+  margin: 2px 0 4px;
+  line-height: 1.5;
+}
 

@@ -28,7 +28,7 @@ export const create = asyncHandler(async (req, res) => {
     date: b.date,
     duration,
   });
-  await record("Cadastro de oficina", workshop.name);
+  await record("Cadastro de oficina", workshop.name, req.user.name);
   res.status(201).json(withCount(workshop));
 });
 
@@ -49,6 +49,7 @@ export const addParticipant = asyncHandler(async (req, res) => {
     await record(
       "Participação registrada",
       `${volunteer.name} · ${workshop.name}`,
+      req.user.name,
     );
   }
   res.json(withCount(workshop));

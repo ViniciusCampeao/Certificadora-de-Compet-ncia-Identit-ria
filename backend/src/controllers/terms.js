@@ -136,6 +136,10 @@ export const uploadMine = asyncHandler(async (req, res) => {
     await unlink(path.join(uploadsDir, req.file.filename)).catch(() => {});
     throw new ApiError(404, "Nenhum termo foi gerado para você ainda");
   }
+  if (!["Gerado", "Rejeitado", "Em análise"].includes(term.status)) {
+    await unlink(path.join(uploadsDir, req.file.filename)).catch(() => {});
+    throw new ApiError(409, "O termo aprovado não pode ser reenviado");
+  }
   if (term.signedFileName) {
     await unlink(path.join(uploadsDir, term.signedFileName)).catch(() => {});
   }

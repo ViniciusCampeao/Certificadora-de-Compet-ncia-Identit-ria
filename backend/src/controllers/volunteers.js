@@ -12,8 +12,8 @@ const editable = [
   "email",
   "phone",
   "cpf",
+  "type",
   "status",
-  "termStatus",
 ];
 
 const validateContact = (b) => {
@@ -69,9 +69,10 @@ export const create = asyncHandler(async (req, res) => {
     period: b.period || undefined,
     email: b.email || "",
     phone: b.phone || "",
+    type: b.type || undefined,
     joined: b.joined || undefined,
   });
-  await record("Cadastro de voluntário", volunteer.name);
+  await record("Cadastro de voluntário", volunteer.name, req.user.name);
   res.status(201).json(volunteer);
 });
 
@@ -81,8 +82,11 @@ export const update = asyncHandler(async (req, res) => {
   for (const [key, value] of Object.entries(req.body))
     if (editable.includes(key))
       volunteer[key] = key === "cpf" ? onlyDigits(value) : value;
+  if (req.body.status === "Encerrado" && !volunteer.left)
+    volunteer.left = new Date().toISOString().slice(0, 10);
+  if (req.body.status === "Ativo") volunteer.left = "";
   await volunteer.save();
-  await record("Atualização de voluntário", volunteer.name);
+  await record("Atualização de voluntário", volunteer.name, req.user.name);
   res.json(volunteer);
 });
 
@@ -94,6 +98,10 @@ export const remove = asyncHandler(async (req, res) => {
       "Exclusão bloqueada: o cadastro possui histórico de oficinas ou documentos.",
     );
   await volunteer.deleteOne();
-  await record("Exclusão de cadastro sem histórico", volunteer.name);
+  await record(
+    "Exclusão de cadastro sem histórico",
+    volunteer.name,
+    req.user.name,
+  );
   res.json({ ok: true });
 });

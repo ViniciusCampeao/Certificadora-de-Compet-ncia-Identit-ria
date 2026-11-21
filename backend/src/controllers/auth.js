@@ -62,7 +62,7 @@ export const changePassword = asyncHandler(async (req, res) => {
   );
   if (!volunteer) throw new ApiError(404, "Voluntário não encontrado");
   if (!(await checkPassword(currentPassword || "", volunteer.passwordHash)))
-    throw new ApiError(401, "Senha atual incorreta");
+    throw new ApiError(400, "Senha atual incorreta");
   volunteer.passwordHash = await hashPassword(newPassword);
   volunteer.mustChangePassword = false;
   await volunteer.save();

@@ -5,10 +5,19 @@ import { Modal } from "../../components/Modal.jsx";
 import { Alert } from "../../components/Alert.jsx";
 import { StatusBadge } from "../../components/StatusBadge.jsx";
 import { VolunteerTable } from "../../components/VolunteerTable.jsx";
+import { ConfirmDialog } from "../../components/ConfirmDialog.jsx";
 import { initials, formatDate } from "../../lib/format.js";
 import { VolunteerFormModal } from "./VolunteerFormModal.jsx";
 
-const editableFields = ["name", "course", "period", "email", "phone", "cpf"];
+const editableFields = [
+  "name",
+  "course",
+  "period",
+  "email",
+  "phone",
+  "cpf",
+  "type",
+];
 
 export function Volunteers() {
   const [volunteers, setVolunteers] = useState([]);
@@ -18,6 +27,7 @@ export function Volunteers() {
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState(null); // {} para novo, voluntário para editar
   const [selected, setSelected] = useState(null);
+  const [confirming, setConfirming] = useState(null);
 
   const load = () => {
     api
@@ -64,13 +74,16 @@ export function Volunteers() {
   };
 
   const removeVolunteer = async (volunteer) => {
+    setBusy(true);
     try {
       await api.del(`/volunteers/${volunteer.id}`);
-      setSelected(null);
+      setConfirming(null);
       load();
     } catch (e) {
-      setSelected(null);
+      setConfirming(null);
       setError(e.message);
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -147,7 +160,11 @@ export function Volunteers() {
           <div className="modal-actions spread">
             <button
               className="secondary danger"
-              onClick={() => removeVolunteer(selected)}
+              onClick={() => {
+                const target = selected;
+                setSelected(null);
+                setConfirming(target);
+              }}
             >
               Excluir
             </button>
@@ -170,6 +187,18 @@ export function Volunteers() {
             </div>
           </div>
         </Modal>
+      )}
+
+      {confirming && (
+        <ConfirmDialog
+          title="Excluir voluntário"
+          message={`Excluir o cadastro de ${confirming.name}? Esta ação não pode ser desfeita.`}
+          confirmLabel="Excluir"
+          danger
+          busy={busy}
+          onClose={() => setConfirming(null)}
+          onConfirm={() => removeVolunteer(confirming)}
+        />
       )}
     </>
   );

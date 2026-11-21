@@ -37,6 +37,7 @@ const run = async () => {
       email: v.email,
       phone: v.phone,
       joined: v.joined,
+      left: v.left || "",
       type: v.type,
       status: v.status,
       workshops: v.workshops,

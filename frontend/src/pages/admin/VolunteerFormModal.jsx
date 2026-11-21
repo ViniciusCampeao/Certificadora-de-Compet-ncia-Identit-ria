@@ -13,6 +13,7 @@ export function VolunteerFormModal({ initial, onSubmit, onClose, busy }) {
     period: clean(initial?.period),
     email: initial?.email || "",
     phone: initial?.phone || "",
+    type: initial?.type || "Voluntário",
     joined: initial?.joined || "",
   });
 
@@ -94,12 +95,26 @@ export function VolunteerFormModal({ initial, onSubmit, onClose, busy }) {
             />
           </label>
         </div>
-        {!editing && (
+        <div className="form-row">
           <label>
-            Data de entrada
-            <input type="date" value={form.joined} onChange={update("joined")} />
+            Tipo de vínculo
+            <select value={form.type} onChange={update("type")}>
+              <option>Voluntário</option>
+              <option>Bolsista</option>
+              <option>Colaborador</option>
+            </select>
           </label>
-        )}
+          {!editing && (
+            <label>
+              Data de entrada
+              <input
+                type="date"
+                value={form.joined}
+                onChange={update("joined")}
+              />
+            </label>
+          )}
+        </div>
         <div className="modal-actions">
           <button type="button" className="secondary" onClick={onClose}>
             Cancelar

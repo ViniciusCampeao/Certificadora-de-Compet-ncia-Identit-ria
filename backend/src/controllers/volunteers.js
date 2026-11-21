@@ -1,7 +1,8 @@
-import { randomUUID } from "node:crypto";
+import mongoose from "mongoose";
 import { asyncHandler, ApiError } from "../lib/http.js";
-import { load, save } from "../data/store.js";
+import { Volunteer } from "../models/index.js";
 import { record } from "../utils/history.js";
+import { escapeRegex } from "../utils/text.js";
 
 const editable = [
   "name",
@@ -13,75 +14,63 @@ const editable = [
   "termStatus",
 ];
 
+const findVolunteer = async (id) => {
+  if (!mongoose.isValidObjectId(id))
+    throw new ApiError(404, "Voluntário não encontrado");
+  const volunteer = await Volunteer.findById(id);
+  if (!volunteer) throw new ApiError(404, "Voluntário não encontrado");
+  return volunteer;
+};
+
 export const list = asyncHandler(async (req, res) => {
-  const db = await load();
-  let items = [...db.volunteers];
-  const q = (req.query.q || "").toLocaleLowerCase("pt-BR");
+  const filter = {};
   const status = req.query.status;
-  if (q)
-    items = items.filter((v) =>
-      [v.name, v.registration, v.course].some((x) =>
-        x.toLocaleLowerCase("pt-BR").includes(q),
-      ),
-    );
-  if (status && status !== "Todos")
-    items = items.filter((v) => v.status === status);
+  if (status && status !== "Todos") filter.status = status;
+  const q = (req.query.q || "").trim();
+  if (q) {
+    const rx = new RegExp(escapeRegex(q), "i");
+    filter.$or = [{ name: rx }, { registration: rx }, { course: rx }];
+  }
+  const items = await Volunteer.find(filter).sort({ createdAt: -1 });
   res.json(items);
 });
 
 export const create = asyncHandler(async (req, res) => {
-  const db = await load();
   const b = req.body;
   if (!b.name?.trim() || !b.registration?.trim())
     throw new ApiError(400, "Nome e matrícula são obrigatórios");
-  if (db.volunteers.some((v) => v.registration === b.registration.trim()))
+  if (await Volunteer.exists({ registration: b.registration.trim() }))
     throw new ApiError(409, "Matrícula já cadastrada");
-  const volunteer = {
-    id: randomUUID(),
+  const volunteer = await Volunteer.create({
     name: b.name.trim(),
     registration: b.registration.trim(),
-    course: b.course || "Não informado",
-    period: b.period || "Não informado",
+    course: b.course || undefined,
+    period: b.period || undefined,
     email: b.email || "",
     phone: b.phone || "",
-    joined: b.joined || new Date().toISOString().slice(0, 10),
-    status: "Ativo",
-    type: "Voluntário",
-    workshops: [],
-    termStatus: "Pendente",
-  };
-  db.volunteers.unshift(volunteer);
-  record(db, "Cadastro de voluntário", volunteer.name);
-  await save(db);
+    joined: b.joined || undefined,
+  });
+  await record("Cadastro de voluntário", volunteer.name);
   res.status(201).json(volunteer);
 });
 
 export const update = asyncHandler(async (req, res) => {
-  const db = await load();
-  const volunteer = db.volunteers.find((v) => v.id === req.params.id);
-  if (!volunteer) throw new ApiError(404, "Voluntário não encontrado");
-  Object.assign(
-    volunteer,
-    Object.fromEntries(
-      Object.entries(req.body).filter(([k]) => editable.includes(k)),
-    ),
-  );
-  record(db, "Atualização de voluntário", volunteer.name);
-  await save(db);
+  const volunteer = await findVolunteer(req.params.id);
+  for (const [key, value] of Object.entries(req.body))
+    if (editable.includes(key)) volunteer[key] = value;
+  await volunteer.save();
+  await record("Atualização de voluntário", volunteer.name);
   res.json(volunteer);
 });
 
 export const remove = asyncHandler(async (req, res) => {
-  const db = await load();
-  const volunteer = db.volunteers.find((v) => v.id === req.params.id);
-  if (!volunteer) throw new ApiError(404, "Voluntário não encontrado");
+  const volunteer = await findVolunteer(req.params.id);
   if (volunteer.workshops.length || volunteer.termStatus !== "Pendente")
     throw new ApiError(
       409,
       "Exclusão bloqueada: o cadastro possui histórico de oficinas ou documentos.",
     );
-  db.volunteers = db.volunteers.filter((v) => v.id !== req.params.id);
-  record(db, "Exclusão de cadastro sem histórico", volunteer.name);
-  await save(db);
+  await volunteer.deleteOne();
+  await record("Exclusão de cadastro sem histórico", volunteer.name);
   res.json({ ok: true });
 });

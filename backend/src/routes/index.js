@@ -8,7 +8,7 @@ import history from "./history.js";
 const api = Router();
 
 api.get("/health", (req, res) =>
-  res.json({ status: "ok", storage: "arquivo JSON local", demo: true }),
+  res.json({ status: "ok", storage: "MongoDB" }),
 );
 api.use("/auth", auth);
 api.use("/dashboard", dashboard);

@@ -1,7 +1,7 @@
 import { asyncHandler } from "../lib/http.js";
-import { load } from "../data/store.js";
+import { History } from "../models/index.js";
 
 export const list = asyncHandler(async (req, res) => {
-  const db = await load();
-  res.json(db.history.slice(0, 30));
+  const items = await History.find().sort({ date: -1 }).limit(30);
+  res.json(items);
 });

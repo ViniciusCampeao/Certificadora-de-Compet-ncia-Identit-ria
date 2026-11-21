@@ -1,51 +1,49 @@
-import { randomUUID } from "node:crypto";
+import mongoose from "mongoose";
 import { asyncHandler, ApiError } from "../lib/http.js";
-import { load, save } from "../data/store.js";
+import { Workshop, Volunteer } from "../models/index.js";
 import { record } from "../utils/history.js";
 
+const withCount = (workshop) => ({
+  ...workshop.toJSON(),
+  participantsCount: workshop.participants.length,
+});
+
 export const list = asyncHandler(async (req, res) => {
-  const db = await load();
-  res.json(
-    db.workshops.map((w) => ({
-      ...w,
-      participantsCount: w.participants.length,
-    })),
-  );
+  const items = await Workshop.find().sort({ createdAt: -1 });
+  res.json(items.map(withCount));
 });
 
 export const create = asyncHandler(async (req, res) => {
-  const db = await load();
   const b = req.body;
   if (!b.name?.trim() || !b.date)
     throw new ApiError(400, "Nome e data são obrigatórios");
-  const workshop = {
-    id: randomUUID(),
+  const workshop = await Workshop.create({
     name: b.name.trim(),
     date: b.date,
     duration: Number(b.duration) || 1,
-    participants: [],
-  };
-  db.workshops.unshift(workshop);
-  record(db, "Cadastro de oficina", workshop.name);
-  await save(db);
-  res.status(201).json(workshop);
+  });
+  await record("Cadastro de oficina", workshop.name);
+  res.status(201).json(withCount(workshop));
 });
 
 export const addParticipant = asyncHandler(async (req, res) => {
-  const db = await load();
-  const workshop = db.workshops.find((w) => w.id === req.params.id);
-  const volunteer = db.volunteers.find((v) => v.id === req.body.volunteerId);
+  if (!mongoose.isValidObjectId(req.params.id))
+    throw new ApiError(404, "Oficina ou voluntário não encontrado");
+  const workshop = await Workshop.findById(req.params.id);
+  const volunteer = mongoose.isValidObjectId(req.body.volunteerId)
+    ? await Volunteer.findById(req.body.volunteerId)
+    : null;
   if (!workshop || !volunteer)
     throw new ApiError(404, "Oficina ou voluntário não encontrado");
-  if (!workshop.participants.includes(volunteer.id)) {
-    workshop.participants.push(volunteer.id);
+  if (!workshop.participants.some((id) => id.equals(volunteer._id))) {
+    workshop.participants.push(volunteer._id);
     volunteer.workshops.push(workshop.name);
-    record(
-      db,
+    await workshop.save();
+    await volunteer.save();
+    await record(
       "Participação registrada",
       `${volunteer.name} · ${workshop.name}`,
     );
-    await save(db);
   }
-  res.json(workshop);
+  res.json(withCount(workshop));
 });

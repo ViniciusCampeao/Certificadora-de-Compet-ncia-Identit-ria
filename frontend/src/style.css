@@ -1158,3 +1158,111 @@ footer b {
     display: none;
   }
 }
+
+/* ---- Perfis, termos e portal do voluntário ---- */
+.status.red {
+  background: #fcebea;
+  color: #c0564d;
+}
+.alert-success {
+  background: #eaf4ed;
+  border-color: #cfe6d6;
+  color: #3f7a54;
+}
+.secondary.danger {
+  color: #c0564d;
+  border-color: #eacbc8;
+}
+.secondary.danger:hover {
+  background: #fcebea;
+}
+.modal-actions.spread {
+  justify-content: space-between;
+}
+.actions-right {
+  display: flex;
+  gap: 10px;
+}
+table tbody tr.clickable {
+  cursor: pointer;
+}
+.muted.small {
+  font-size: 11px;
+}
+.term-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.term-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 4px 18px 18px;
+}
+.term-note {
+  margin: 0 18px 16px;
+  padding: 10px 12px;
+  background: #fcebea;
+  border: 1px solid #eacbc8;
+  border-radius: 7px;
+  color: #a4473f;
+  font-size: 12px;
+}
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 37px;
+  padding: 0 16px;
+  border-radius: 6px;
+  border: 1px solid #dfe5df;
+  background: white;
+  color: #47554a;
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.button-link:hover {
+  background: var(--soft);
+}
+
+.portal {
+  min-height: 100vh;
+  background: var(--soft);
+}
+.portal-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+  background: white;
+  border-bottom: 1px solid var(--line);
+}
+.portal-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+.portal-user small {
+  display: block;
+  color: var(--muted);
+}
+.portal-main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 28px 20px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.portal-main.narrow {
+  max-width: 460px;
+}
+.portal-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+

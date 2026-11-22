@@ -5,7 +5,6 @@ import { PageTitle } from "../../components/PageTitle.jsx";
 import { Stat } from "../../components/Stat.jsx";
 import { VolunteerTable } from "../../components/VolunteerTable.jsx";
 import { Alert } from "../../components/Alert.jsx";
-import { formatDate } from "../../lib/format.js";
 
 const today = new Date()
   .toLocaleDateString("pt-BR", {
@@ -92,7 +91,7 @@ export function Dashboard() {
               Ver todos <span>→</span>
             </button>
           </div>
-          <VolunteerTable volunteers={volunteers.slice(0, 4)} compact />
+          <VolunteerTable volunteers={volunteers.slice(0, 4)} />
         </section>
         <section className="panel">
           <div className="panel-head">

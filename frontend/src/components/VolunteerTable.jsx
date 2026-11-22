@@ -1,7 +1,7 @@
 import { initials, formatDate } from "../lib/format.js";
 import { StatusBadge } from "./StatusBadge.jsx";
 
-export function VolunteerTable({ volunteers, onSelect, compact }) {
+export function VolunteerTable({ volunteers, onSelect }) {
   return (
     <div className="table-wrap">
       <table>
